@@ -1,9 +1,7 @@
 package com.zeppa.eventbustestcase.events;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class DataEvent {
-    private static final AtomicInteger lastRevision = new AtomicInteger();
+    private static volatile int lastRevision = 1;
     private final int revision;
     private final long threadId;
     private final long timestamp;
@@ -14,8 +12,8 @@ public class DataEvent {
         this.timestamp = System.nanoTime();
     }
 
-    public static DataEvent newInstance() {
-        return new DataEvent(lastRevision.incrementAndGet());
+    public static synchronized DataEvent newInstance() {
+        return new DataEvent(lastRevision++);
     }
 
     public int getRevision() {
@@ -29,7 +27,7 @@ public class DataEvent {
         return "DataEvent{" +
                 "revision=" + revision +
                 ", threadId=" + threadId +
-                ", timestamp=" + timestamp.substring(len - 7, len) +
+                ", timestamp=" + timestamp +
                 '}';
     }
 }
